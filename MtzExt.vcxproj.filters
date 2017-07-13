@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{c75f1701-5a64-42dd-9a2e-fda81b4b5042}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{75b1e1b9-fd71-447c-99d5-c6b2d66898a1}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{febf259b-9071-4751-8723-bbb296ae9f55}</UniqueIdentifier>
+      <Extensions>ico;cur;Mtz;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="MtzExt.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MtzTip.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StdAfx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ccp4\ccp4_general.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ccp4\ccp4_parser.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ccp4\ccp4_program.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ccp4\ccp4_unitcell.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ccp4\cmtzlib.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ccp4\cvecmat.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ccp4\library_err.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ccp4\library_file.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ccp4\library_utils.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ccp4\ccp4_array.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="MtzExt.def">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="MtzTip.rgs">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Midl Include="MtzExt.idl">
+      <Filter>Source Files</Filter>
+    </Midl>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="MtzExt.rc">
+      <Filter>Source Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="MtzTip.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StdAfx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MtzExt.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

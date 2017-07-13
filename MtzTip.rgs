@@ -1,0 +1,58 @@
+HKCR
+{
+	MtzExt.MtzTip.1 = s 'MtzTip Class'
+	{
+		CLSID = s '{CB374CEC-307B-47fa-850F-137CF52BC763}'
+	}
+	MtzExt.MtzTip = s 'MtzTip Class'
+	{
+		CLSID = s '{CB374CEC-307B-47fa-850F-137CF52BC763}'
+		CurVer = s 'MtzExt.MtzTip.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {CB374CEC-307B-47fa-850F-137CF52BC763} = s 'MtzTip Class'
+		{
+			ProgID = s 'MtzExt.MtzTip.1'
+			VersionIndependentProgID = s 'MtzExt.MtzTip'
+			ForceRemove 'Programmable'
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Apartment'
+			}
+			'TypeLib' = s '{CB374CEC-307B-47fa-850F-137CF52BC763}'
+		}
+	}
+
+	.mtz
+	{
+		ShellEx
+		{	
+			ForceRemove '{00021500-0000-0000-C000-000000000046}' = s '{CB374CEC-307B-47fa-850F-137CF52BC763}'
+		}
+	}
+}
+
+HKLM 
+{ 
+  Software 
+  { 
+    Microsoft 
+	{ 
+	   Windows 
+	    { 
+		  CurrentVersion 
+		    {
+			  Shell Extensions
+			    {
+				  Approved
+				  {
+					ForceRemove '{CB374CEC-307B-47fa-850F-137CF52BC763}' = s 'Structure factor information'
+				  }
+		        }
+
+			}
+		}
+	}
+  }
+}
