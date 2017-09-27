@@ -1,3 +1,7 @@
+MtzExtInfoTip - a shell extension library for Windows Explorer
+----------------------------------------------------------------
+![alt text](MtzExtInfoTip.jpg)
+
 This library is mostly for the benefit of scientists working in macromolecular crystallography. 
 The file format MTZ as defined by the CCP4 community contains header information about the data contained 
 in each file such as unit cell dimensions, space group, name of columns etc. These can be displayed with command 
