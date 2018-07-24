@@ -30,6 +30,10 @@ SOFTWARE.
 #include <math.h>
 #include <string.h>
 #include "ccp4\cmtzlib.h"
+#include "ccp4\csymlib.h"
+#include "ccp4\mtzdata.h"
+#include "ccp4\safe_mtz.h"
+
 
 /////////////////////////////////////////////////////////////////////////////
 // CMtzTip
@@ -126,18 +130,65 @@ HRESULT CMtzTip::GetStructurefactorInfo(CComBSTR *p)
 		i++;
 	}
 	wsprintf(colsstr, colstr);
-	
+
+  CMtz::MTZCOL *Hcol = CMtz::MtzColLookup(mtzdata, "H");
+  int hmin = Hcol->min;
+  int hmax = Hcol->max;
+  CMtz::MTZCOL *Kcol = CMtz::MtzColLookup(mtzdata, "K");
+  int kmin = Kcol->min;
+  int kmax = Kcol->max;
+  CMtz::MTZCOL *Lcol = CMtz::MtzColLookup(mtzdata, "L");
+  int lmin = Lcol->min;
+  int lmax = Lcol->max;
+
+  
+  int ncols = 3;
+  std::vector< std::vector<float> > columns;
+  std::vector<int> logmss_(ncols);
+  int* logmss = &*logmss_.begin();
+  std::vector<CMtz::MTZCOL*> lookup_(ncols);
+  CMtz::MTZCOL** lookup = &*lookup_.begin();
+  lookup[0] = Hcol;
+  lookup[1] = Kcol;
+  lookup[2] = Lcol;
+
+  int failure = MtzReadRefl(mtzdata, columns, logmss, lookup, ncols, mtzdata->nref);
+  CSym::CCP4SPG* myspg = CSym::ccp4spg_load_by_standard_num(mtzdata->mtzsymm.spcgrp);
+  int ncentrics = 0;
+  for (int iref = 0; iref < mtzdata->nref; iref++)
+  { // count centrics and get min max miller indices
+    int h = columns[0][iref];
+    hmin = min(h, hmin);
+    hmax = max(h, hmax);
+    int k = columns[1][iref];
+    kmin = min(k, kmin);
+    kmax = max(k, kmax);
+    int l = columns[2][iref];
+    lmin = min(l, lmin);
+    lmax = max(l, lmax);
+    ncentrics += CSym::ccp4spg_is_centric(myspg, h, k, l);
+  }
+  
 	// Format the infotip string 
 	HRESULT hr = StringCchPrintf(szTemp, nchr, 
-		_T("Type: Structure Factors\nReflections: %d\nPoint group: %s\n"
-		"Space group: %s\nResolution: %2.3f - %2.3fÅ\n"
-		"Cell: %2.2fÅ %2.2fÅ %2.2fÅ  %2.2f° %2.2f° %2.2f°\n"
-		"Columns: %s\n"
-		"Size: %s\nDate modified: %s"), 
+		_T("Type: Structure Factors\n"
+      "Reflections: %d\n"
+      "H: [%d; %d], K: [%d; %d], L: [%d; %d]\n"
+      "Point group: %s\n"
+      "Space group, (number): %s (%d)\n"
+      "Centrics: %d\n"
+      "Resolution: %2.3f - %2.3fÅ\n"
+		  "Cell: %2.2fÅ %2.2fÅ %2.2fÅ  %2.2f° %2.2f° %2.2f°\n"
+		  "Columns: %s\n"
+		  "Size: %s\n"
+      "Date modified: %s"), 
 		mtzdata->nref, 
+    hmin, hmax, kmin, kmax, lmin, lmax,
 		mtzdata->mtzsymm.pgname, 
-		mtzdata->mtzsymm.spcgrpname,
-		1.0/sqrt(mtzdata->xtal[0]->resmax), 
+    mtzdata->mtzsymm.spcgrpname,
+    mtzdata->mtzsymm.spcgrp,
+    ncentrics,
+    1.0/sqrt(mtzdata->xtal[0]->resmax),
 		1.0/sqrt(mtzdata->xtal[0]->resmin),
 		mtzdata->xtal[0]->cell[0],
 		mtzdata->xtal[0]->cell[1],

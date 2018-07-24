@@ -54,6 +54,12 @@
     <ClCompile Include="ccp4\ccp4_array.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ccp4\csymlib.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ccp4\safe_mtz.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="MtzExt.def">
@@ -84,6 +90,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MtzExt.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ccp4\safe_mtz.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
