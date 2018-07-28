@@ -119,10 +119,12 @@ HRESULT CMtzTip::GetStructurefactorInfo(CComBSTR *p)
   int i = 0;
   colstr[0] = 0;
   int nallowedcols = min(ncol, maxncols);
-  while (i < nallowedcols)
+  while (i++ < nallowedcols)
   {
     char tmpstr[34];
     _strlwr_s(ctyps[i], 3); // lowercase column type to improve readability
+    if ( strcmp(ctyps[i], "h")==0 ) // don't list H K L columns
+      continue;
     if (i < (nallowedcols - 1))
       sprintf(tmpstr, "%s ", clabs[i]);
       //sprintf(tmpstr, "%s(%s) ", clabs[i], ctyps[i]);
@@ -135,7 +137,6 @@ HRESULT CMtzTip::GetStructurefactorInfo(CComBSTR *p)
         sprintf(tmpstr, "%s", clabs[i]);
 
     strcat(colstr, tmpstr);
-    i++;
   }
   wsprintf(colsstr, colstr);
 
