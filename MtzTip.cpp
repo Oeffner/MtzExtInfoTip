@@ -126,7 +126,7 @@ HRESULT CMtzTip::GetStructurefactorInfo(CComBSTR *p)
     if ( strcmp(ctyps[i], "h")==0 ) // don't list H K L columns
       continue;
     if (i < (nallowedcols - 1))
-      sprintf(tmpstr, "%s ", clabs[i]);
+      sprintf(tmpstr, "%s, ", clabs[i]);
       //sprintf(tmpstr, "%s(%s) ", clabs[i], ctyps[i]);
     else
       if (i == (maxncols - 1) && i < (ncol - 1))
@@ -187,7 +187,7 @@ HRESULT CMtzTip::GetStructurefactorInfo(CComBSTR *p)
       "Space group, (number): %s (%d)\n"
       "Centrics: %d\n"
       "Resolution: %2.3f - %2.3fÅ\n"
-      "Cell: %2.2fÅ %2.2fÅ %2.2fÅ  %2.2f° %2.2f° %2.2f°\n"
+      "Cell: %2.2fÅ, %2.2fÅ, %2.2fÅ, %2.2f°, %2.2f°, %2.2f°\n"
       "Columns: %s\n"
       "Size: %s\n"
       "Date modified: %s"),
