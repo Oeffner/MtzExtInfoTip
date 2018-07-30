@@ -1,30 +1,11 @@
-#if defined(__sgi) && defined(_COMPILER_VERSION) && _COMPILER_VERSION == 741
-#include <complex>
-#endif
+
+// Modified version of phaser\codebase\phaser\lib\safe_mtz.cc
+// for reading column data into array of floats
+
 #include "safe_mtz.h"
 #include "cmtzlib.h"
 #include "mtzdata.h"
 
-
-CMtz::MTZ*
-safe_mtz_get(std::string const& HKLIN, int read_refs)
-{
-  CMtz::MTZ *result = CMtz::MtzGet(HKLIN.c_str(), read_refs);
-  if (result == 0) {
-    throw std::exception(HKLIN.c_str());
-  }
-  return result;
-}
-
-CMtz::MTZCOL*
-safe_mtz_col_lookup(const CMtz::MTZ* mtzfrom, std::string const& label)
-{
-  CMtz::MTZCOL* result = CMtz::MtzColLookup(mtzfrom, label.c_str());
-  if (result == 0) {
-    throw std::exception( label.c_str() );
-  }
-  return result;
-}
 
 
 int MtzReadRefl(CMtz::MTZ *mtz, std::vector< std::vector<float> > &columns, int logmss[], 
