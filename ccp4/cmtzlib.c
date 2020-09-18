@@ -3381,11 +3381,15 @@ int MtzFreeBatch(MTZBAT *batch)
 /* Frees the memory reserved for 'batch' */
 
 {
-  if (batch != NULL) {
-    MtzFreeBatch(batch->next);
-    batch->next = NULL;
-    free(batch);
+  MTZBAT* cbatch = batch;
+  while (cbatch != NULL)
+  {
+    MTZBAT* pbatch = cbatch;
+    cbatch = cbatch->next;
+    free(pbatch);
+    pbatch = NULL;
   }
+
   return 1;
 }
 
