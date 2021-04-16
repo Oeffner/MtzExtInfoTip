@@ -127,7 +127,7 @@ HRESULT CMtzTip::GetStructurefactorInfo(CComBSTR *p)
       _strlwr_s(ctyps[i], 3); // lowercase column type to improve readability
       if (strcmp(ctyps[i], "h") == 0) // don't list H K L columns
         continue;
-      if (i < (nallowedcols - 1))
+      if (i < (nallowedcols ))
         sprintf(tmpstr, "%s, ", clabs[i]);
       //sprintf(tmpstr, "%s(%s) ", clabs[i], ctyps[i]);
       else
@@ -135,8 +135,10 @@ HRESULT CMtzTip::GetStructurefactorInfo(CComBSTR *p)
           //sprintf(tmpstr, "%s(%s) and %d other columns", clabs[i], ctyps[i], (ncol - maxncols));
           sprintf(tmpstr, "%s and %d other columns", clabs[i], (ncol - maxncols));
         else
+        {
           //sprintf(tmpstr, "%s(%s)", clabs[i], ctyps[i]);
           sprintf(tmpstr, "%s", clabs[i]);
+        }
 
       strcat(colstr, tmpstr);
     }
@@ -151,8 +153,6 @@ HRESULT CMtzTip::GetStructurefactorInfo(CComBSTR *p)
     CMtz::MTZCOL* Lcol = CMtz::MtzColLookup(mtzdata, "L");
     int lmin = Lcol->min;
     int lmax = Lcol->max;
-
-
     int ncols = 3;
     std::vector< std::vector<float> > columns;
     std::vector<int> logmss_(ncols);
