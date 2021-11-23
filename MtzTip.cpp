@@ -54,7 +54,7 @@ HRESULT CMtzTip::GetInfoTip(DWORD dwFlags, LPWSTR* ppwszTip)
 	GetStructurefactorInfo((CComBSTR *)&bstrInfo);
     
 	*ppwszTip = (WCHAR*) m_pAlloc->Alloc( 
-		(bstrInfo.Length() +1) * sizeof(WCHAR));
+    (static_cast<SIZE_T>(bstrInfo.Length()) +1) * sizeof(WCHAR));
 	if (*ppwszTip)
 		wcscpy(*ppwszTip, (WCHAR*)(BSTR)bstrInfo);
 	
@@ -76,14 +76,14 @@ HRESULT CMtzTip::GetStructurefactorInfo(CComBSTR *p)
   const int nchr = 40;
   const int maxncols = 40;
   SYSTEMTIME stUTC, stLocal;
-  TCHAR sizestr[20], datestr[30], szTemp[maxncols * nchr + 500], colsstr[maxncols * nchr];
-  char clabs[MCOLUMNS][31], ctyps[MCOLUMNS][3], colstr[maxncols * nchr];
+  TCHAR sizestr[20], datestr[30], szTemp[maxncols * nchr + 5000], ucellstr[5000];
+  char clabs[MCOLUMNS][31], ctyps[MCOLUMNS][3];
   int csetid[MCOLUMNS];
+  long int ncentrics = 0;
 
   try
   {
-    HANDLE hFile = CreateFile(m_szFile, GENERIC_READ, FILE_SHARE_READ, NULL,
-    OPEN_EXISTING, 0, NULL);
+    HANDLE hFile = CreateFile(m_szFile, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
     if (hFile == NULL)
     {
       p->LoadString(IDS_TEXT_UNABLETOREAD);
@@ -101,11 +101,11 @@ HRESULT CMtzTip::GetStructurefactorInfo(CComBSTR *p)
     SystemTimeToTzSpecificLocalTime(NULL, &stUTC, &stLocal);
 
     // Build a string showing the date and time.
-    StringCchPrintf(datestr, 30, "%02d/%02d/%d  %02d:%02d",
+    StringCbPrintf(datestr, 30, _T("%02d/%02d/%d  %02d:%02d"),
       stLocal.wMonth, stLocal.wDay, stLocal.wYear,
       stLocal.wHour, stLocal.wMinute);
     // format file size string
-    TCHAR suffixes[7][4] = { {"B\0"}, {"KB\0"}, {"MB\0"}, {"GB\0"}, {"TB\0"}, {"PB\0"} };
+    TCHAR suffixes[7][4] = { {_T("B\0")}, {_T("KB\0")}, {_T("MB\0")}, {_T("GB\0")}, {_T("TB\0")}, {_T("PB\0")} };
     int s = 0;
     double size = (double)bsize;
     while (size >= 1000)
@@ -113,12 +113,13 @@ HRESULT CMtzTip::GetStructurefactorInfo(CComBSTR *p)
       s++;
       size /= 1000;
     }
-    StringCchPrintf(sizestr, 20, "%2.1f %s", size, suffixes[s]);
+    StringCbPrintf(sizestr, 20, _T("%2.1f %s"), size, suffixes[s]);
 
-    CMtz::MTZ* mtzdata = CMtz::MtzGet(m_szFile, 0);
+    // using MtzGetUserCellTolerance rather than MtzGet to pick up all unit cells that may be present
+    CMtz::MTZ* mtzdata = CMtz::MtzGetUserCellTolerance(m_szFile, false, 0.0);
     if (mtzdata == NULL)
     {
-      hr = StringCchPrintf(szTemp, 500 + 20 + 30,
+      hr = StringCbPrintf(szTemp, 500 + 20 + 30,
         _T("Not a CCP4.MTZ file\n"
           "Size: %s\n"
           "Date modified: %s"),
@@ -129,117 +130,104 @@ HRESULT CMtzTip::GetStructurefactorInfo(CComBSTR *p)
     {
       // get name of the columns and the letter indicating their type
       int ncol = CMtz::MtzListColumn(mtzdata, clabs, ctyps, csetid);
-      int i = 0;
-      colstr[0] = 0;
-      int nallowedcols = min(ncol, maxncols) - 1;
-      while (i++ < nallowedcols)
+      if (ncol > 0)
       {
-        char tmpstr[34];
-        _strlwr_s(ctyps[i], 3); // lowercase column type to improve readability
-        if (strcmp(ctyps[i], "h") == 0) // don't list H K L columns
-          continue;
-        if (i < (nallowedcols ))
-          sprintf(tmpstr, "%s, ", clabs[i]);
-        //sprintf(tmpstr, "%s(%s) ", clabs[i], ctyps[i]);
-        else
-          if (i == (maxncols - 1) && i < (ncol - 1))
-            //sprintf(tmpstr, "%s(%s) and %d other columns", clabs[i], ctyps[i], (ncol - maxncols));
-            sprintf(tmpstr, "%s and %d other columns", clabs[i], (ncol - maxncols));
-          else
+        CMtz::MTZCOL* Hcol = CMtz::MtzColLookup(mtzdata, "H");
+        int hmin = Hcol->min;
+        int hmax = Hcol->max;
+        CMtz::MTZCOL* Kcol = CMtz::MtzColLookup(mtzdata, "K");
+        int kmin = Kcol->min;
+        int kmax = Kcol->max;
+        CMtz::MTZCOL* Lcol = CMtz::MtzColLookup(mtzdata, "L");
+        int lmin = Lcol->min;
+        int lmax = Lcol->max;
+        ucellstr[0] = L'\0';
+        TCHAR mstr[500];
+        for (int i = 0; i < mtzdata->nxtal; i++)
+        {
+          if (strncmp(mtzdata->xtal[i]->xname, "HKL_base", 8) != 0 && mtzdata->nxtal > 1)
           {
-            //sprintf(tmpstr, "%s(%s)", clabs[i], ctyps[i]);
-            sprintf(tmpstr, "%s", clabs[i]);
+            StringCbPrintf(mstr, 300,
+              _T("Unit cell: %2.3f≈, %2.3f≈, %2.3f≈, %2.2f∞, %2.2f∞, %2.2f∞\n"),
+              mtzdata->xtal[i]->cell[0],
+              mtzdata->xtal[i]->cell[1],
+              mtzdata->xtal[i]->cell[2],
+              mtzdata->xtal[i]->cell[3],
+              mtzdata->xtal[i]->cell[4],
+              mtzdata->xtal[i]->cell[5]
+            );
+            StringCbCat(ucellstr, 5000, mstr);
           }
 
-        strcat(colstr, tmpstr);
+          for (int j = 0; j < mtzdata->xtal[i]->nset; j++)
+          {
+            double wl = mtzdata->xtal[i]->set[j]->wavelength;
+            if (wl != 0.0)
+            {
+              StringCbPrintf(mstr, 50, _T("Wavelength: %1.5f≈\n"), wl);
+              StringCbCat(ucellstr, 5000, mstr);
+            }
+            bool columnlabel = false;
+            for (int k = 0; k < mtzdata->xtal[i]->set[j]->ncol; k++)
+            {
+              char* lbl = mtzdata->xtal[i]->set[j]->col[k]->label;
+              if (strcmp(lbl, "H") == 0 || strcmp(lbl, "K") == 0 || strcmp(lbl, "L") == 0)
+                continue;
+
+              if (!columnlabel)
+              {
+                StringCbCat(ucellstr, 5000, _T("Columns: "));
+                columnlabel=true;
+              }
+              if ((k+1) < mtzdata->xtal[i]->set[j]->ncol)
+                sprintf(mstr, "%s, ", mtzdata->xtal[i]->set[j]->col[k]->label);
+              else
+                sprintf(mstr, "%s", mtzdata->xtal[i]->set[j]->col[k]->label);
+              StringCbCat(ucellstr, 5000, mstr);
+            }
+            if (columnlabel)
+              StringCbCat(ucellstr, 5000, _T("\n"));
+          }
+        }
+        
+        // Format the infotip string 
+        hr = StringCbPrintf(szTemp, maxncols * nchr + 1500,
+          _T("Type: Reflection data (CCP4.MTZ)\n"
+            "Reflections: %d\n"
+            "H: [%d; %d], K: [%d; %d], L: [%d; %d]\n"
+            "Point group: %s\n"
+            "Space group: %s (%d)\n"
+            "Resolution: %2.3f - %2.3f≈\n"
+            "%s" // unitcell, wavelengths and columns from above
+            "Size: %s\n"
+            "Date modified: %s"),
+          mtzdata->nref,
+          hmin, hmax, kmin, kmax, lmin, lmax,
+          mtzdata->mtzsymm.pgname,
+          mtzdata->mtzsymm.spcgrpname,
+          mtzdata->mtzsymm.spcgrp,
+          1.0 / sqrt(mtzdata->xtal[0]->resmax),
+          1.0 / sqrt(mtzdata->xtal[0]->resmin),
+          ucellstr,
+          sizestr,
+          datestr);
       }
-      wsprintf(colsstr, colstr);
-
-      CMtz::MTZCOL* Hcol = CMtz::MtzColLookup(mtzdata, "H");
-      int hmin = Hcol->min;
-      int hmax = Hcol->max;
-      CMtz::MTZCOL* Kcol = CMtz::MtzColLookup(mtzdata, "K");
-      int kmin = Kcol->min;
-      int kmax = Kcol->max;
-      CMtz::MTZCOL* Lcol = CMtz::MtzColLookup(mtzdata, "L");
-      int lmin = Lcol->min;
-      int lmax = Lcol->max;
-      int ncols = 3;
-      std::vector< std::vector<float> > columns;
-      std::vector<int> logmss_(ncols);
-      int* logmss = &*logmss_.begin();
-      std::vector<CMtz::MTZCOL*> lookup_(ncols);
-      CMtz::MTZCOL** lookup = &*lookup_.begin();
-      lookup[0] = Hcol;
-      lookup[1] = Kcol;
-      lookup[2] = Lcol;
-
-      int failure = MtzReadRefl(mtzdata, columns, logmss, lookup, ncols, mtzdata->nref);
-      CSym::CCP4SPG* myspg = CSym::ccp4spg_load_by_standard_num(mtzdata->mtzsymm.spcgrp);
-      long int ncentrics = 0;
-      for (int iref = 0; iref < mtzdata->nref; iref++)
-      { // count centrics and get min max miller indices
-        int h = columns[0][iref];
-        hmin = min(h, hmin);
-        hmax = max(h, hmax);
-        int k = columns[1][iref];
-        kmin = min(k, kmin);
-        kmax = max(k, kmax);
-        int l = columns[2][iref];
-        lmin = min(l, lmin);
-        lmax = max(l, lmax);
-        ncentrics += CSym::ccp4spg_is_centric(myspg, h, k, l);
-      }
-
-      TCHAR centricstr[40];
-      if (ncentrics < 0) // clipper library environment variable is not set
-        wsprintf(centricstr, "");
       else
-        wsprintf(centricstr, "Centrics: %d\n", ncentrics);
-
-      // Format the infotip string 
-      hr = StringCchPrintf(szTemp, maxncols * nchr + 500 + 20 + 30,
-        _T("Type: Structure Factors\n"
-          "Reflections: %d\n"
-          "H: [%d; %d], K: [%d; %d], L: [%d; %d]\n"
-          "Point group: %s\n"
-          "Space group, (number): %s (%d)\n%s"
-          "Resolution: %2.3f - %2.3f≈\n"
-          "Cell: %2.2f≈, %2.2f≈, %2.2f≈, %2.2f∞, %2.2f∞, %2.2f∞\n"
-          "Columns: %s\n"
-          "Size: %s\n"
-          "Date modified: %s"),
-        mtzdata->nref,
-        hmin, hmax, kmin, kmax, lmin, lmax,
-        mtzdata->mtzsymm.pgname,
-        mtzdata->mtzsymm.spcgrpname,
-        mtzdata->mtzsymm.spcgrp,
-        centricstr,
-        1.0 / sqrt(mtzdata->xtal[0]->resmax),
-        1.0 / sqrt(mtzdata->xtal[0]->resmin),
-        mtzdata->xtal[0]->cell[0],
-        mtzdata->xtal[0]->cell[1],
-        mtzdata->xtal[0]->cell[2],
-        mtzdata->xtal[0]->cell[3],
-        mtzdata->xtal[0]->cell[4],
-        mtzdata->xtal[0]->cell[5],
-        colsstr,
-        sizestr,
-        datestr);
+        wsprintf(szTemp, "No columns in MTZ file");
 
       MtzFree(mtzdata);
     }
 
     if (FAILED(hr))
       return hr;
-
-    p->Append(szTemp);
   }
+  
   catch (...)
   {
-    wsprintf(szTemp, "An unhandled error occurred");
-    p->Append(szTemp);
+    wsprintf(szTemp, "Error trying to read CCP4.MTZ file header");
   }
+  
+  p->Append(szTemp);
 
   return S_OK;
 }

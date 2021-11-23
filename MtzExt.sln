@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31829.152
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MtzExt", "MtzExt.vcxproj", "{DB4517AE-02AA-4D3D-A077-9F4EDCA36454}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestMtzLib", "TestMtzLib\TestMtzLib.vcxproj", "{7B25DB1E-7530-4258-8EFE-F0F723F0F7E3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,6 +15,8 @@ Global
 		Release MinDependency|x64 = Release MinDependency|x64
 		Release MinSize|Win32 = Release MinSize|Win32
 		Release MinSize|x64 = Release MinSize|x64
+		Release|Win32 = Release|Win32
+		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{DB4517AE-02AA-4D3D-A077-9F4EDCA36454}.Debug|Win32.ActiveCfg = Release MinDependency|Win32
@@ -27,8 +31,31 @@ Global
 		{DB4517AE-02AA-4D3D-A077-9F4EDCA36454}.Release MinSize|Win32.Build.0 = Release MinDependency|Win32
 		{DB4517AE-02AA-4D3D-A077-9F4EDCA36454}.Release MinSize|x64.ActiveCfg = Release MinSize|x64
 		{DB4517AE-02AA-4D3D-A077-9F4EDCA36454}.Release MinSize|x64.Build.0 = Release MinSize|x64
+		{DB4517AE-02AA-4D3D-A077-9F4EDCA36454}.Release|Win32.ActiveCfg = Release MinSize|Win32
+		{DB4517AE-02AA-4D3D-A077-9F4EDCA36454}.Release|Win32.Build.0 = Release MinSize|Win32
+		{DB4517AE-02AA-4D3D-A077-9F4EDCA36454}.Release|x64.ActiveCfg = Release MinSize|x64
+		{DB4517AE-02AA-4D3D-A077-9F4EDCA36454}.Release|x64.Build.0 = Release MinSize|x64
+		{7B25DB1E-7530-4258-8EFE-F0F723F0F7E3}.Debug|Win32.ActiveCfg = Debug|Win32
+		{7B25DB1E-7530-4258-8EFE-F0F723F0F7E3}.Debug|Win32.Build.0 = Debug|Win32
+		{7B25DB1E-7530-4258-8EFE-F0F723F0F7E3}.Debug|x64.ActiveCfg = Debug|x64
+		{7B25DB1E-7530-4258-8EFE-F0F723F0F7E3}.Debug|x64.Build.0 = Debug|x64
+		{7B25DB1E-7530-4258-8EFE-F0F723F0F7E3}.Release MinDependency|Win32.ActiveCfg = Release|Win32
+		{7B25DB1E-7530-4258-8EFE-F0F723F0F7E3}.Release MinDependency|Win32.Build.0 = Release|Win32
+		{7B25DB1E-7530-4258-8EFE-F0F723F0F7E3}.Release MinDependency|x64.ActiveCfg = Release|x64
+		{7B25DB1E-7530-4258-8EFE-F0F723F0F7E3}.Release MinDependency|x64.Build.0 = Release|x64
+		{7B25DB1E-7530-4258-8EFE-F0F723F0F7E3}.Release MinSize|Win32.ActiveCfg = Release|Win32
+		{7B25DB1E-7530-4258-8EFE-F0F723F0F7E3}.Release MinSize|Win32.Build.0 = Release|Win32
+		{7B25DB1E-7530-4258-8EFE-F0F723F0F7E3}.Release MinSize|x64.ActiveCfg = Release|x64
+		{7B25DB1E-7530-4258-8EFE-F0F723F0F7E3}.Release MinSize|x64.Build.0 = Release|x64
+		{7B25DB1E-7530-4258-8EFE-F0F723F0F7E3}.Release|Win32.ActiveCfg = Release|Win32
+		{7B25DB1E-7530-4258-8EFE-F0F723F0F7E3}.Release|Win32.Build.0 = Release|Win32
+		{7B25DB1E-7530-4258-8EFE-F0F723F0F7E3}.Release|x64.ActiveCfg = Release|x64
+		{7B25DB1E-7530-4258-8EFE-F0F723F0F7E3}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {973AA54F-7CFC-4079-9E9D-B892C113FEB8}
 	EndGlobalSection
 EndGlobal

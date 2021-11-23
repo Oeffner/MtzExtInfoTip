@@ -240,6 +240,12 @@
 # endif
 #endif
 
+// Check for Apple Silicon
+#if defined(__APPLE__) && defined(__arm64__)
+#  define NATIVEIT DFNTI_IBO
+#  define NATIVEFT DFNTF_LEIEEE
+#endif
+
 #ifndef NATIVEFT
 #  error "Can't determine machine number format"
 #endif
